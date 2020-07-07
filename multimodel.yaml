@@ -1,0 +1,80 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: multimodel-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 0.5.1, pipelines.kubeflow.org/pipeline_compilation_time: '2020-06-30T10:38:23.521246',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "A pipeline for multi model
+      orchestration", "inputs": [{"default": "1Gi", "name": "size_of_pvc", "optional":
+      true}, {"default": "https://www.sciencemag.org/sites/default/files/styles/article_main_image_-_1280w__no_aspect_/public/dogs_1280p_0.jpg?itok=6jQzdNB8",
+      "name": "img_url", "optional": true}], "name": "MultiModel"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 0.5.1}
+  namespace: default
+spec:
+  entrypoint: multimodel
+  templates:
+  - name: inference
+    container:
+      args: [Classifier.py, --url, '{{inputs.parameters.img_url}}']
+      command: [python]
+      image: chaowen/keras_catsdogs_inference
+      volumeMounts:
+      - {mountPath: /mnt, name: my-pvc}
+    inputs:
+      parameters:
+      - {name: img_url}
+      - {name: my-pvc-name}
+    metadata:
+      labels: {pipelines.kubeflow.org/pipeline-sdk-type: kfp}
+    volumes:
+    - name: my-pvc
+      persistentVolumeClaim: {claimName: '{{inputs.parameters.my-pvc-name}}'}
+  - name: multimodel
+    inputs:
+      parameters:
+      - {name: img_url}
+      - {name: size_of_pvc}
+    dag:
+      tasks:
+      - name: inference
+        template: inference
+        dependencies: [my-pvc]
+        arguments:
+          parameters:
+          - {name: img_url, value: '{{inputs.parameters.img_url}}'}
+          - {name: my-pvc-name, value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'}
+      - name: my-pvc
+        template: my-pvc
+        arguments:
+          parameters:
+          - {name: size_of_pvc, value: '{{inputs.parameters.size_of_pvc}}'}
+  - name: my-pvc
+    resource:
+      action: create
+      manifest: |
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: '{{workflow.name}}-my-pvc'
+        spec:
+          accessModes:
+          - ReadWriteMany
+          resources:
+            requests:
+              storage: '{{inputs.parameters.size_of_pvc}}'
+    inputs:
+      parameters:
+      - {name: size_of_pvc}
+    outputs:
+      parameters:
+      - name: my-pvc-manifest
+        valueFrom: {jsonPath: '{}'}
+      - name: my-pvc-name
+        valueFrom: {jsonPath: '{.metadata.name}'}
+      - name: my-pvc-size
+        valueFrom: {jsonPath: '{.status.capacity.storage}'}
+    metadata:
+      labels: {pipelines.kubeflow.org/pipeline-sdk-type: kfp}
+  arguments:
+    parameters:
+    - {name: size_of_pvc, value: 1Gi}
+    - {name: img_url, value: 'https://www.sciencemag.org/sites/default/files/styles/article_main_image_-_1280w__no_aspect_/public/dogs_1280p_0.jpg?itok=6jQzdNB8'}

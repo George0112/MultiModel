@@ -1,0 +1,8 @@
+#tensorflow-gpu==1.15
+pillow
+#scipy
+keras==2.3.1
+wget
+#click
+#numpy
+minio
