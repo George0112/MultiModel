@@ -1,0 +1,5 @@
+tensorflow-serving-api
+pillow
+scipy
+wget
+numpy

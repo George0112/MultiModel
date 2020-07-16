@@ -1,0 +1,39 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "catsdogs-serve-nodeport",
+    "namespace": "default",
+    "selfLink": "/api/v1/namespaces/default/services/catsdogs-serve-nodeport",
+    "uid": "e31878ea-6a5f-4796-91f3-79881b5f41e1",
+    "resourceVersion": "906",
+    "creationTimestamp": "2020-07-14T14:47:31Z",
+    "labels": {
+      "app": "catsdogs-serve"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "port-1",
+        "protocol": "TCP",
+        "port": 8501,
+        "targetPort": 8501,
+        "nodePort": 30501
+      },
+      {
+        "name": "port-2",
+        "protocol": "TCP",
+        "port": 8500,
+        "targetPort": 8500,
+        "nodePort": 30500
+      }
+    ],
+    "selector": {
+      "app": "catsdogs-serve"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  }
+}

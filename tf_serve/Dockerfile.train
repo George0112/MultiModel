@@ -1,0 +1,12 @@
+FROM tensorflow/tensorflow:2.2.0-gpu
+
+COPY requirements.txt /requirements.txt
+COPY train.py /train.py
+COPY reload.py /reload.py
+COPY sample /sample
+
+WORKDIR /
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "-u", "/train.py"]

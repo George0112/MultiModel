@@ -49,7 +49,7 @@ RUN mkdir -p ${MODEL_BASE_PATH}
 ENV MODEL_NAME=catsdogs
 
 # COPY Model
-COPY saved_model /models/catsdogs
+# COPY saved_model /models/catsdogs
 
 # Create a script that runs the model server so we can use environment variables
 # while also passing in arguments from the docker command line

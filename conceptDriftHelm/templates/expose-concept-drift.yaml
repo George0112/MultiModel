@@ -1,0 +1,31 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "concept-drift",
+    "namespace": "default",
+    "selfLink": "/api/v1/namespaces/default/services/concept-drift",
+    "uid": "08233264-56da-4176-b6ac-3a5623eed239",
+    "resourceVersion": "8656",
+    "creationTimestamp": "2020-07-14T16:34:15Z",
+    "labels": {
+      "app": "concept-drift"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "protocol": "TCP",
+        "port": 8000,
+        "targetPort": 8000,
+        "nodePort": 30800
+      }
+    ],
+    "selector": {
+      "app": "concept-drift"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  }
+}
