@@ -66,3 +66,18 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Parameters for machine learning serving model
+model_container_name: catsdogs-tf-serve
+model_container_image: chaowen.catsdogs-tf-serve:pv
+model_volume_mountPath: "/models"
+model_volume_name: catsdogs-pv-storage
+model_volume_claim: catsdogs-pv-storage
+
+model_grpc_port: 30500
+model_http_port: 30501
+
+# Parameters for concept drift model
+concept_drift_image: chaowen/concept-drift
+
+concept_drift_port: 30800
